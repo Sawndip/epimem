@@ -1,0 +1,7 @@
+basins.cpp              -- random pattern
+basin2.cpp              -- all patterns tested 
+basin2_ERgraphs.cpp     -- all pattern tested, multi pc option, Erdoes-Renyi-Graphs, Nearest Neighbor, full interactions, and no interaction possible
+basin2_ERgraphs_2p.cpp  -- all 2-pattern-combination tested, multi pc option, Erdoes-Renyi-Graphs
+specificpattern.cpp	-- variable length, different patterns from command line, full interactions
+potts.cpp        	-- random or full interactions, different length and state number to set in program
+graph2pattern.cpp       -- calculates for a given graph, the probablitity for each pattern 

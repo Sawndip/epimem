@@ -77,12 +77,8 @@ int main(int argc, char* argv[]){
   
   Pottsmodel* model = (Pottsmodel*)malloc(sizeof(Pottsmodel));
   initialize(model,10,2);
-  //int temp[2] = {(int)pow(2,0)+(int)pow(2,1)+(int)pow(2,2),(int)pow(2,9)+(int)pow(2,8)+(int)pow(2,7)};
   unsigned int i,j;//,t
   int numberofpatterns = 2;
-  //int totalmemories = 1;//(int)pow(model->states,model->length)/2;
-  //int numis[7] = {0,511,255,256,257,63,65};
-  //int counter;
   int largest = (int)pow(model->states,model->length)/2 - 1;
   if(largest < endat)endat=largest;
   for(numberofpatterns = startat; numberofpatterns <= endat; numberofpatterns++){  
@@ -91,20 +87,12 @@ int main(int argc, char* argv[]){
     int graph;
     for(graph = 0; graph < 1; graph++){//number of replicates
       std::string filename(argv[1]);
-      //std::ostringstream fileno;
-      //fileno<<filename<<"_"<<numberofpatterns<<".original";
       std::ostringstream filencd;
       filencd<<filename<<"_"<<numberofpatterns<<"_"<<graph<<".celldivision";
-      //std::ostringstream filebasin;
-      //filebasin<<filename<<"_"<<numberofpatterns<<".basins";;
       std::ostringstream filebasincd;
       filebasincd<<filename<<"_"<<numberofpatterns<<"_"<<graph<<".basinscd";
-      //std::ofstream org;
-      //org.open(fileno.str().c_str());
       std::ofstream cd;
       cd.open(filencd.str().c_str());
-      //std::ofstream basins;
-      //basins.open(filebasin.str().c_str());
       std::ofstream basinscd;
       basinscd.open(filebasincd.str().c_str());
       /*reset*/
@@ -113,7 +101,6 @@ int main(int argc, char* argv[]){
 	  model->interactions[i][j] = 0.0;
 	}
       }
-      //      int maxpattern = (int)pow(model->states,model->length)/2 - 1;
       int p1 = 0;
       std::cout<<numberofpatterns<<" "<<graph<<std::endl;
       int2nary(numberofpatterns,model->modelstring,model->length,model->states);
@@ -141,16 +128,7 @@ int main(int argc, char* argv[]){
 	}
       }
    
-      /* calculate localfield */
-      //int p2 = model->length - p1;
-      //int p1cdstates = pow(2,p1);
-      //int p2cdstates = pow(2,p2);
-      //double p1prob = (double)(p1cdstates - p2cdstates)/(double)(p1cdstates+p2cdstates);
-      //double p2prob = (double)(p2cdstates - p1cdstates)/(double)(p1cdstates+p2cdstates);
-      //model->localfield = 0.0;//((double)p1*p1prob+(double)p2*p2prob)/(double)(p1+p2);
 
-      //std::cout<<std::endl;
-    
   
       /****RANDOM INTERACTIONS****/
       /*for(i = 0; i < model->length; i++){
@@ -171,52 +149,13 @@ int main(int argc, char* argv[]){
 
 
       /* do monte carlo simulation to find the distribution of the states */
-      //TODO
-      //std::map<int,int> states;
   
-      int samples = 1000;
-      int upbou = 10000;
-      //      int max = pow(model->states,model->length);
+      unsigned int generations = 30;
+      int generationlength = 100;
       int b;
       std::vector<int> patterns;
       patterns.push_back(numberofpatterns);
       patterns.push_back((int)pow(model->states,model->length)-1-numberofpatterns);
-    
-      //for(b = 0; b < (int)patterns.size(); b++){
-      //  int unstable = 0;
-      //  int diff = 0;
-      //  int same = 0;
-      //  for(i = 0; i < (unsigned int)samples; i++){
-      //	if(i%100 == 0)std::cerr<<i<<" of "<<samples<<std::endl;
-      //	int2nary(patterns[b],model->modelstring,model->length,model->states);
-      //	int changes = mh(model,rng,upbou);
-      //	std::cerr<<changes<<std::endl;
-      //	int curstate = nary2int(model->modelstring,model->length,model->states);
-      //	if(changes > 0){
-      //	  unstable++;
-      //	}else{
-      //	  //if(states.find(curstate) == states.end())states[curstate] = 1;
-      //	  //else states[curstate]++;
-      //	  if(curstate == patterns[b]){
-      //	    same++;
-      //	  }else{
-      //	    diff++;
-      //	  }
-      //	}    
-      //  }
-      //  org<<patterns[b]<<"\t"<<same<<"\t"<<diff<<"\t"<<unstable<<std::endl; 
-      //}
-      ///* basins of original model */
-      //for(b = 0; b < (int)pow(model->states,model->length); b++){
-      //  for( i = 0; i < (unsigned int)samples; i++){
-      //	int2nary(b,model->modelstring,model->length,model->states);
-      //	int changes = mh(model,rng,upbou);
-      //	int curstate = nary2int(model->modelstring,model->length,model->states);
-      //	if(changes == 0)basins<<b<<"\t"<<curstate<<std::endl;
-      //  }
-      //}
-
-
 
 
   
@@ -226,52 +165,61 @@ int main(int argc, char* argv[]){
 	int backtoorigin = 0;
 	int converttodifferent = 0;
 	int unstable = 0;
-	int2nary(patterns[b],init,model->length,model->states);
-	/* set weak local field */
-	for(i = 0; i < (unsigned int)model->length; i++)model->localfield[i] = 0.5*(double)(2*init[i] -1);
 	int notzero = 0;
-	for(i = 0; i < (unsigned int)model->length; i++)if(init[i] > 0)notzero++;
 	int celldivstates = pow(2,notzero);
-	for(i = 0; i < (unsigned int)celldivstates; i++){
-	  for(j = 0; j < (unsigned int)samples; j++){
-	    //if(j%100 == 0)std::cerr<<j<<" of "<<samples<<" ("<<i<<"/"<<celldivstates<<")"<<std::endl;
-	    setState(model->modelstring,i,notzero,init,model->length);
+	int2nary(patterns[b],init,model->length,model->states);
+	
+	int r ;
+	for(r = 0; r < 1000; r++){
+	  /* set inital state*/
+	  int2nary(patterns[b],model->modelstring,model->length,model->states);
+	
+	  /* set inital weak local field */
+	  for(i = 0; i < (unsigned int)model->length; i++)model->localfield[i] = 0.1*(double)(2*model->modelstring[i] -1);
+	
+	  /* calculate possible cell divsiion states */
+	  notzero = 0;
+	  for(i = 0; i < (unsigned int)model->length; i++)if(init[i] > 0)notzero++;
+	  celldivstates = pow(2,notzero);
+	
+	
+	  for(i = 0; i < generations; i++){
+	    int choose = rand() % celldivstates;
+	    setState(model->modelstring,choose,notzero,model->modelstring,model->length);
 	    int celldivstate = nary2int(model->modelstring,model->length,model->states);
-	    int changes = mh(model,rng,upbou);
+	    int changes = mh(model,rng,generationlength);
 	    if(changes > 0){
 	      unstable++;
 	    }else{
 	      int res = nary2int(model->modelstring,model->length,model->states);
-	      basinscd<<patterns[b]<<"\t"<<celldivstate<<"\t"<<res<<std::endl;
-	      if(patterns[b] == res)backtoorigin++;
-	      else converttodifferent++;
+	      basinscd<<patterns[b]<<"\t"<<celldivstate<<"\t"<<res<<"\t"<<i<<"\t"<<r<<std::endl;
+	      if(patterns[b] == res){
+		backtoorigin++;
+	      }else{
+		converttodifferent++;
+	      }
 	    }
+	  
+	    /* recalculate all stuff */
+	    for(j = 0; j < (unsigned int)model->length; j++)model->localfield[j] = 0.1*(double)(2*model->modelstring[j] -1);
+	    notzero = 0;
+	    for(j = 0; j < (unsigned int)model->length; j++)if(model->modelstring[j] > 0)notzero++;
+	    celldivstates = pow(2,notzero);
+
+
 	  }
 	}
 	cd<<patterns[b]<<"\t"<<backtoorigin<<"\t"<<converttodifferent<<"\t"<<unstable<<std::endl; 
       }
-      //org.close();
       cd.close();
-      //basins.close();
       basinscd.close();
-      //std::cerr<<"zipping files"<<std::endl;
       /* gzip files */
       std::string gzip("gzip ");
       std::string cmd = gzip;
-      //cmd.append(fileno.str());
-      //fileno<<".gz";
-      //remove(fileno.str().c_str());
-      //system(cmd.c_str()); 
-      //cmd = gzip;
       cmd.append(filencd.str());
       filencd<<".gz";
       remove(filencd.str().c_str());
       system(cmd.c_str());
-      //cmd = gzip;
-      //cmd.append(filebasin.str());
-      //filebasin<<".gz";
-      //remove(filebasin.str().c_str());
-      //system(cmd.c_str());
       cmd = gzip;
       cmd.append(filebasincd.str());
       filebasincd<<".gz";

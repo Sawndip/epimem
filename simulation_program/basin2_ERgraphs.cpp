@@ -175,7 +175,7 @@ int main(int argc, char* argv[]){
 	  int2nary(patterns[b],model->modelstring,model->length,model->states);
 	
 	  /* set inital weak local field */
-	  for(i = 0; i < (unsigned int)model->length; i++)model->localfield[i] = 0.1*(double)(2*model->modelstring[i] -1);
+	  for(i = 0; i < (unsigned int)model->length; i++)model->localfield[i] = 0.5*(double)(2*model->modelstring[i] -1);
 	
 	  /* calculate possible cell divsiion states */
 	  notzero = 0;
@@ -188,20 +188,19 @@ int main(int argc, char* argv[]){
 	    setState(model->modelstring,choose,notzero,model->modelstring,model->length);
 	    int celldivstate = nary2int(model->modelstring,model->length,model->states);
 	    int changes = mh(model,rng,generationlength);
+	    int res = nary2int(model->modelstring,model->length,model->states);
 	    if(changes > 0){
 	      unstable++;
 	    }else{
-	      int res = nary2int(model->modelstring,model->length,model->states);
-	      basinscd<<patterns[b]<<"\t"<<celldivstate<<"\t"<<res<<"\t"<<i<<"\t"<<r<<std::endl;
 	      if(patterns[b] == res){
 		backtoorigin++;
 	      }else{
 		converttodifferent++;
 	      }
 	    }
-	  
+	    basinscd<<patterns[b]<<"\t"<<celldivstate<<"\t"<<res<<"\t"<<i<<"\t"<<r<<std::endl;
 	    /* recalculate all stuff */
-	    for(j = 0; j < (unsigned int)model->length; j++)model->localfield[j] = 0.1*(double)(2*model->modelstring[j] -1);
+	    for(j = 0; j < (unsigned int)model->length; j++)model->localfield[j] = 0.5*(double)(2*model->modelstring[j] -1);
 	    notzero = 0;
 	    for(j = 0; j < (unsigned int)model->length; j++)if(model->modelstring[j] > 0)notzero++;
 	    celldivstates = pow(2,notzero);

@@ -66,12 +66,13 @@ int main(int argc, char* argv[]){
   srand (time(NULL));
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine rng(seed); /*default uniform random number generator */
-  if(argc != 4){
-    std::cerr<<"./"<<std::string(argv[0])<<" <outputprefix> <part> <size>"<<std::endl;
+  if(argc != 5){
+    std::cerr<<"./"<<std::string(argv[0])<<" <outputprefix> <part> <size> <xi>"<<std::endl;
     return EXIT_FAILURE;
   }
   int part = atoi(argv[2]);
   int size = atoi(argv[3]);
+  double xi = atof(argv[4]);
   int startat = part*size;
   int endat = (part + 1 ) * size - 1;
   
@@ -175,7 +176,7 @@ int main(int argc, char* argv[]){
 	  int2nary(patterns[b],model->modelstring,model->length,model->states);
 	
 	  /* set inital weak local field */
-	  for(i = 0; i < (unsigned int)model->length; i++)model->localfield[i] = 0.5*(double)(2*model->modelstring[i] -1);
+	  for(i = 0; i < (unsigned int)model->length; i++)model->localfield[i] = xi*(double)(2*model->modelstring[i] -1);
 	
 	  /* calculate possible cell divsiion states */
 	  notzero = 0;
@@ -200,7 +201,7 @@ int main(int argc, char* argv[]){
 	    }
 	    basinscd<<patterns[b]<<"\t"<<celldivstate<<"\t"<<res<<"\t"<<i<<"\t"<<r<<std::endl;
 	    /* recalculate all stuff */
-	    for(j = 0; j < (unsigned int)model->length; j++)model->localfield[j] = 0.5*(double)(2*model->modelstring[j] -1);
+	    for(j = 0; j < (unsigned int)model->length; j++)model->localfield[j] = xi*(double)(2*model->modelstring[j] -1);
 	    notzero = 0;
 	    for(j = 0; j < (unsigned int)model->length; j++)if(model->modelstring[j] > 0)notzero++;
 	    celldivstates = pow(2,notzero);

@@ -1,3 +1,5 @@
+#ifndef MODEL_HPP
+#define MODEL_HPP
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
@@ -12,8 +14,9 @@ typedef struct Pottsmodel {
   int states;
   double** interactions;
   int* modelstring;
-  double* localfield; 
-  std::vector<int> pos;
+  double* localfield;
+  double* cellfield;
+  std::vector<int>* pos;
 } Pottsmodel;
 
 void initialize(Pottsmodel* p, int l, int s);
@@ -21,3 +24,5 @@ int update(Pottsmodel* p);
 int mhStep(Pottsmodel* p,std::default_random_engine rng);
 int mh(Pottsmodel* p,std::default_random_engine rng, int upperbound);
 void del(Pottsmodel* p);
+int nary2int(Pottsmodel* p);
+#endif

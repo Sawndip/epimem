@@ -7,12 +7,13 @@
 void initialize(Pottsmodel* p, int l, int s){
   p->length = l;
   p->states = s;
-  p->pos.reserve(p->length);
+  p->pos = new std::vector<int>();
+  p->pos->reserve(p->length);
   /* allocate memory for interactions */
   unsigned int i,j;
   p->interactions = (double**)malloc(sizeof(double*)*p->length);
   for(i = 0; i < (unsigned int)p->length; i++){
-    p->pos.push_back((int)i);
+    p->pos->push_back((int)i);
     p->interactions[i] = (double*)malloc(sizeof(double)*p->length);
     for(j = 0; j < (unsigned int)p->length; j++){
       p->interactions[i][j] = 0.0;
@@ -25,6 +26,9 @@ void initialize(Pottsmodel* p, int l, int s){
   
   p->localfield = (double*)malloc(sizeof(double)*p->length);
   for(i = 0; i <(unsigned int) p->length; i++)p->localfield[i] = 0.0;
+    
+  p->cellfield = (double*)malloc(sizeof(double)*p->length);
+  for(i = 0; i <(unsigned int) p->length; i++)p->cellfield[i] = 0.0;
   
   
 }
@@ -53,9 +57,9 @@ int update(Pottsmodel* p){
 int mhStep(Pottsmodel* p, std::default_random_engine rng){
   int changes = 0;
   unsigned int i,j,k;
-  std::shuffle (p->pos.begin(), p->pos.end(), rng);
+  std::shuffle (p->pos->begin(), p->pos->end(), rng);
   for(i = 0; i < (unsigned int)p->length; i++){
-    int site = p->pos[i];
+    int site = p->pos->at(i);
     int newstate = rand() % p->states;
     int oldstate = p->modelstring[site];
     while(newstate == p->modelstring[site])newstate = rand() % p->states;
@@ -67,6 +71,7 @@ int mhStep(Pottsmodel* p, std::default_random_engine rng){
       }
       if(p->modelstring[j] == 1)e_bef += p->localfield[j];
       else e_bef -= p->localfield[j];
+      e_bef += p->cellfield[j]*(2.0*(double)p->modelstring[j]-1);
     }
     p->modelstring[site] = newstate;
     double e_aft = 0.0;
@@ -77,6 +82,7 @@ int mhStep(Pottsmodel* p, std::default_random_engine rng){
       }
       if(p->modelstring[j] == 1)e_aft += p->localfield[j];
       else e_aft -= p->localfield[j];
+      e_aft += p->cellfield[j]*(2.0*(double)p->modelstring[j]-1);
     }
     double pr = exp(-e_bef+e_aft) > 1.0 ? 1.0 : exp(-e_bef+e_aft); 
     double accept = (double)rand() / (double)RAND_MAX;
@@ -99,7 +105,22 @@ int mh(Pottsmodel* p,std::default_random_engine rng, int upperbound){
 
 void del(Pottsmodel* p){
   unsigned int i,j;
+  delete p->pos;
   for(i = 0; i < (unsigned int)p->length; i++)free(p->interactions[i]);
   free(p->interactions);
   free(p->modelstring);
+  free(p->localfield);
+  free(p->cellfield);
+}
+
+
+int nary2int(Pottsmodel* p){
+  int i;
+  int num = 0;
+  
+  for(i = 0; i < p->length; i++){
+    num += p->modelstring[i]*(int)pow(p->states,i);
+  } 
+  
+  return num;
 }

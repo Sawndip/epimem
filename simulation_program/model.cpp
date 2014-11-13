@@ -69,8 +69,9 @@ int mhStep(Pottsmodel* p, std::default_random_engine rng){
 	if(p->modelstring[j] == p->modelstring[k])
 	  e_bef += p->interactions[j][k];
       }
-      if(p->modelstring[j] == 1)e_bef += p->localfield[j];
-      else e_bef -= p->localfield[j];
+      //if(p->modelstring[j] == 1)e_bef += p->localfield[j];
+      //else e_bef -= p->localfield[j];
+      e_bef += p->localfield[j]*(2.0*(double)p->modelstring[j]-1);
       e_bef += p->cellfield[j]*(2.0*(double)p->modelstring[j]-1);
     }
     p->modelstring[site] = newstate;
@@ -80,8 +81,9 @@ int mhStep(Pottsmodel* p, std::default_random_engine rng){
 	if(p->modelstring[j] == p->modelstring[k])
 	  e_aft += p->interactions[j][k];
       }
-      if(p->modelstring[j] == 1)e_aft += p->localfield[j];
-      else e_aft -= p->localfield[j];
+      //if(p->modelstring[j] == 1)e_aft += p->localfield[j];
+      // else e_aft -= p->localfield[j];
+      e_aft += p->localfield[j]*(2.0*(double)p->modelstring[j]-1);
       e_aft += p->cellfield[j]*(2.0*(double)p->modelstring[j]-1);
     }
     double pr = exp(-e_bef+e_aft) > 1.0 ? 1.0 : exp(-e_bef+e_aft); 

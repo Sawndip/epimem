@@ -43,7 +43,7 @@ int main(int argc, char* argv[]){
     outname << outfile  << "_" << replicates;
     /* create population */
     Pop* pop = (Pop*)malloc(sizeof(Pop));
-    init_pop(pop,6,6,10,2);
+    init_pop(pop,10,10,10,2);
     init_models(pop, pattern1, pattern2, rng);
     init_interactions(pop);
     int** pM = patternMatrix(pop);
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]){
 	for(j = 0; j< pop->y; j++){
 	  if(pop->space[i][j] != NULL){
 	    for(k = 0; k < pop->space[i][j]->length; k++){
-	      pop->space[i][j]->localfield[k] = 2.0*pop->space[i][j]->modelstring[k];
+	      pop->space[i][j]->localfield[k] = 0.5*(2.0*pop->space[i][j]->modelstring[k]-1.0);
 	    }
 	  }
 	}

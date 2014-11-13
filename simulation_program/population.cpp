@@ -31,7 +31,7 @@ void init_models(Pop* p, int p1, int p2, std::default_random_engine rng){
       //	setState(p2,p->space[i][j]->modelstring, p->space[i][j]->length,p->space[i][j]->states); 
       //}
       int pattern = p1;
-      if(i > 2) pattern = p2;
+      if(i > (p->x-1)/2) pattern = p2;
       setState(pattern,p->space[i][j]->modelstring, p->space[i][j]->length,p->space[i][j]->states);
     }
   }
@@ -43,7 +43,10 @@ void init_interactions(Pop* p){
     for(j = 0; j < p->y; j++){
       for(k = 0; k < p->space[i][j]->length; k++){
 	for(l = 0; l < p->space[i][j]->length; l++){
-	  if(abs(k-l) == 1) p->space[i][j]->interactions[k][l] = 1.0;
+	  if(abs(k-l) == 1){
+	    if(p->space[i][j]->modelstring[k] == p->space[i][j]->modelstring[l])p->space[i][j]->interactions[k][l] = 1.0;
+	    else p->space[i][j]->interactions[k][l] = -1.0;
+	  }
 	}
       }
     }
@@ -171,7 +174,7 @@ void calcField(Pottsmodel* o, Pop* p, std::vector<std::pair<int,int> > n){
       if(p->space[n[j].first][n[j].second] != NULL)
 	sum += (2.0*(double)p->space[n[j].first][n[j].second]->modelstring[i])-1.0;
     }
-    o->cellfield[i] = 0.01*sum/(double)n.size();
+    o->cellfield[i] = 0.3*sum/(double)n.size();
   }
 }
 
@@ -286,8 +289,8 @@ void divide(Pottsmodel* p, Pottsmodel* child, std::default_random_engine rng){
   
   child->localfield = (double*)malloc(child->length*sizeof(double));
   for(i = 0; i < child->length; i++){
-    child->localfield[i] = 0.1*p->modelstring[i];
-    p->localfield[i] = 0.1*p->modelstring[i];
+    child->localfield[i] = 0.5*(2.0*p->modelstring[i]-1);
+    p->localfield[i] = 0.5*(2.0*p->modelstring[i]-1);
   }
   /* reserve space for cell field */
   child->cellfield = (double*)malloc(child->length*sizeof(double));

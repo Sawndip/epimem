@@ -48,17 +48,8 @@ int main(int argc, char* argv[]){
     init_pop_growing(pop,10,10,10,2, sigstrength,lfstrength);
     init_models_growing(pop, pattern1, pattern2, rng);
     init_interactions(pop);
-    int** pM = patternMatrix(pop);
     int i,j,k;
-    for(i = 0; i < pop->x; i++){
-      std::cerr<<pM[i][0]<<" ";
-      for(j = 1; j < pop->y; j++){
-	std::cerr<<" "<<pM[i][j];
-      }
-      std::cerr<<std::endl;
-    } 
-    std::cerr<<std::endl<<std::endl;
-    int generations = 10;
+    int generations = 30;
     while(generations > 0){
       generations--;
       /* set local fields */
@@ -71,44 +62,23 @@ int main(int argc, char* argv[]){
 	  }
 	}
       }
-      mh_pop(pop,rng,10000);
-      for(i = 0; i < pop->x; i++)free(pM[i]);
-      free(pM);
-      pM = patternMatrix(pop);
-      for(i = 0; i < pop->x; i++){
-	std::cerr<<pM[i][0]<<" ";
-	for(j = 1; j < pop->y; j++){
-	  std::cerr<<" "<<pM[i][j];
-	}
-	std::cerr<<std::endl;
-      } 
-      std::cerr<<std::endl<<std::endl;
+      mh_pop(pop,rng,1000);
       cleanUp(pop,0,pattern1,pattern2);
-      for(i = 0; i < pop->x; i++)free(pM[i]);
-      free(pM);
-      pM = patternMatrix(pop);
-      for(i = 0; i < pop->x; i++){
-	std::cerr<<pM[i][0]<<" ";
-	for(j = 1; j < pop->y; j++){
-	  std::cerr<<" "<<pM[i][j];
-	}
-	std::cerr<<std::endl;
-      } 
-      std::cerr<<std::endl<<std::endl;
       grow(pop,rng);
-      for(i = 0; i < pop->x; i++)free(pM[i]);
-      free(pM);
-      pM = patternMatrix(pop);
-      for(i = 0; i < pop->x; i++){
-	std::cerr<<pM[i][0]<<" ";
-	for(j = 1; j < pop->y; j++){
-	  std::cerr<<" "<<pM[i][j];
-	}
-	std::cerr<<std::endl;
-      } 
-      std::cerr<<std::endl<<std::endl;
     }
-    del_pop(pop);
+    int p1cells = 0;
+    int p2cells = 0;
+    int** pM = patternMatrix(pop);
+    for(i = 0; i < pop->x; i++){
+      for(j = 1; j < pop->y; j++){
+	if(pM[i][j] == pattern1)p1cells++;
+	if(pM[i][j] == pattern2)p2cells++;
+      }
+    }
+    std::cout<<p1cells<<std::endl<<p2cells<<std::endl;
+    //for(i = 0; i < pop->x; i++)free(pM[i]);
+    //free(pM);
+    //del_pop(pop);
   }
   
   return EXIT_SUCCESS;

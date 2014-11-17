@@ -1,11 +1,15 @@
 #include "population.hpp"
 
-void init_pop(Pop* p, int x, int y, int l, int s){
+void init_pop(Pop* p, int x, int y, int l, int s, double ss, double lfs){
   int i,j;
   
   p->x = x;
   p->y = y;
   
+  p->signalstrength = ss;
+  p->localfieldstrength = lfs;
+
+
   p->pos = new std::vector<std::pair<int,int> > ();
   p->pos->reserve(x*y);
   
@@ -18,6 +22,43 @@ void init_pop(Pop* p, int x, int y, int l, int s){
       initialize(p->space[i][j], l, s);
     }
   }
+}
+
+
+void init_pop_growing(Pop* p, int x, int y, int l, int s, double ss, double lfs){
+  int i,j;
+  
+  p->x = x;
+  p->y = y;
+  
+  p->signalstrength = ss;
+  p->localfieldstrength = lfs;
+
+
+  p->pos = new std::vector<std::pair<int,int> > ();
+  p->pos->reserve(x*y);
+  
+  p->space = (Pottsmodel***)malloc(x*sizeof(Pottsmodel**));
+  for(i = 0; i < x; i++){
+    p->space[i] = (Pottsmodel**)malloc(y*sizeof(Pottsmodel*));
+    for(j = 0; j < y; j++){
+      p->pos->push_back(std::make_pair(i,j));
+    }
+  }
+
+  p->space[0][0]  = (Pottsmodel*)malloc(sizeof(Pottsmodel));
+  initialize(p->space[0][0], l, s);
+  p->space[0][1]  = (Pottsmodel*)malloc(sizeof(Pottsmodel));
+  initialize(p->space[0][1], l, s);
+  p->space[1][0]  = (Pottsmodel*)malloc(sizeof(Pottsmodel));
+  initialize(p->space[1][0], l, s);  
+  p->space[p->x-1][p->y-1]  = (Pottsmodel*)malloc(sizeof(Pottsmodel));
+  initialize(p->space[p->x-1][p->y-1], l, s);
+  p->space[p->x-1][p->y-2]  = (Pottsmodel*)malloc(sizeof(Pottsmodel));
+  initialize(p->space[p->x-1][p->y-2], l, s);
+  p->space[p->x-2][p->y-1]  = (Pottsmodel*)malloc(sizeof(Pottsmodel));
+  initialize(p->space[p->x-2][p->y-1], l, s);
+
 }
 
 void init_models(Pop* p, int p1, int p2, std::default_random_engine rng){
@@ -37,15 +78,30 @@ void init_models(Pop* p, int p1, int p2, std::default_random_engine rng){
   }
 }
 
+
+
+void init_models_growing(Pop* p, int p1, int p2, std::default_random_engine rng){
+
+  setState(p1,p->space[0][0]->modelstring, p->space[0][0]->length,p->space[0][0]->states);
+  setState(p1,p->space[0][1]->modelstring, p->space[0][1]->length,p->space[0][1]->states);
+  setState(p1,p->space[1][0]->modelstring, p->space[1][0]->length,p->space[1][0]->states);  
+  setState(p2,p->space[p->x-1][p->y-1]->modelstring, p->space[p->x-1][p->y-1]->length,p->space[p->x-1][p->y-1]->states);
+  setState(p2,p->space[p->x-1][p->y-2]->modelstring, p->space[p->x-1][p->y-2]->length,p->space[p->x-1][p->y-2]->states);
+  setState(p2,p->space[p->x-2][p->y-1]->modelstring, p->space[p->x-2][p->y-1]->length,p->space[p->x-2][p->y-1]->states);
+
+}
+
 void init_interactions(Pop* p){
   int i,j,k,l;
   for(i = 0; i < p->x; i++){
     for(j = 0; j < p->y; j++){
-      for(k = 0; k < p->space[i][j]->length; k++){
-	for(l = 0; l < p->space[i][j]->length; l++){
-	  if(abs(k-l) == 1){
-	    if(p->space[i][j]->modelstring[k] == p->space[i][j]->modelstring[l])p->space[i][j]->interactions[k][l] = 1.0;
-	    else p->space[i][j]->interactions[k][l] = -1.0;
+      if(p->space[i][j] != NULL){
+	for(k = 0; k < p->space[i][j]->length; k++){
+	  for(l = 0; l < p->space[i][j]->length; l++){
+	    if(abs(k-l) == 1){
+	      if(p->space[i][j]->modelstring[k] == p->space[i][j]->modelstring[l])p->space[i][j]->interactions[k][l] = 1.0;
+	      else p->space[i][j]->interactions[k][l] = -1.0;
+	    }
 	  }
 	}
       }
@@ -174,7 +230,7 @@ void calcField(Pottsmodel* o, Pop* p, std::vector<std::pair<int,int> > n){
       if(p->space[n[j].first][n[j].second] != NULL)
 	sum += (2.0*(double)p->space[n[j].first][n[j].second]->modelstring[i])-1.0;
     }
-    o->cellfield[i] = 0.3*sum/(double)n.size();
+    o->cellfield[i] = p->signalstrength*sum/(double)n.size();
   }
 }
 
@@ -242,7 +298,7 @@ void grow(Pop* p, std::default_random_engine rng){
 	  std::pair<int,int> pair = t[rng() % t.size()];
 	  //std::cerr<<"divide "<<i<<","<<j<<" to "<<pair.first<<" "<<pair.second<<std::endl;
 	  p->space[pair.first][pair.second] = (Pottsmodel*)malloc(sizeof(Pottsmodel));
-	  divide(p->space[i][j],p->space[pair.first][pair.second],rng);
+	  divide(p->space[i][j],p->space[pair.first][pair.second],rng,p->localfieldstrength);
 	  //std::cerr<<"done"<<std::endl;
 	  //int dummy;
 	  //lastk = pair.first;
@@ -273,7 +329,7 @@ void grow(Pop* p, std::default_random_engine rng){
 
 }
 
-void divide(Pottsmodel* p, Pottsmodel* child, std::default_random_engine rng){
+void divide(Pottsmodel* p, Pottsmodel* child, std::default_random_engine rng, double lf){
   // child = (Pottsmodel*)malloc(sizeof(Pottsmodel));
   //std::cerr<<child<<" "<<p->length<<" "<<p->states<<std::endl;
   initialize(child,p->length,p->states);
@@ -289,8 +345,8 @@ void divide(Pottsmodel* p, Pottsmodel* child, std::default_random_engine rng){
   
   child->localfield = (double*)malloc(child->length*sizeof(double));
   for(i = 0; i < child->length; i++){
-    child->localfield[i] = 0.5*(2.0*p->modelstring[i]-1);
-    p->localfield[i] = 0.5*(2.0*p->modelstring[i]-1);
+    child->localfield[i] = lf*(2.0*p->modelstring[i]-1);
+    p->localfield[i] = lf*(2.0*p->modelstring[i]-1);
   }
   /* reserve space for cell field */
   child->cellfield = (double*)malloc(child->length*sizeof(double));

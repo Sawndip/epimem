@@ -1,0 +1,31 @@
+data = read.table("spatial_result_matrix.total",header=T, row.names=1)
+datar = read.table("spatial_result_matrix.ratio",header=T, row.names=1)     
+inv = read.table("spatial_result_inverse_matrix.total",header=T, row.names=1)
+invr = read.table("spatial_result_inverse_matrix.ratio",header=T, row.names=1)
+ma = as.matrix(data)
+mar = as.matrix(datar)
+mi = as.matrix(inv)
+mi = as.matrix(invr)
+
+mar = mar/0.5
+mir = mir/0.5 
+
+colRamp = colorRampPalette(c("white","black","red"))
+
+par(mfrow=c(2,2))
+image.plot(ma,zlim=c(0,50),col=gray.colors(10,start=0,end=1),axes=F,xlab="pop sig", ylab="local field")
+title("2 patterns -- cell number")
+axis(1,at=seq(0.0,1.0,0.2),labels=seq(0.0,0.5,0.1))
+axis(2,at=seq(0.0,1.0,0.2),labels=seq(0.0,0.5,0.1))
+image.plot(mar,zlim=c(0,2),col=colRamp(20),axes=F,xlab="pop sig", ylab="local field")
+title("2 patterns -- pattern 1 fraction")
+axis(1,at=seq(0.0,1.0,0.2),labels=seq(0.0,0.5,0.1))
+axis(2,at=seq(0.0,1.0,0.2),labels=seq(0.0,0.5,0.1))
+image.plot(mi,zlim=c(0,50),col=gray.colors(10,start=0,end=1),axes=F,xlab="pop sig", ylab="local field")
+title("inverse patterns -- cell number")
+axis(1,at=seq(0.0,1.0,0.2),labels=seq(0.0,0.5,0.1))
+axis(2,at=seq(0.0,1.0,0.2),labels=seq(0.0,0.5,0.1))
+image.plot(mir,zlim=c(0,2),col=colRamp(20),axes=F,xlab="pop sig", ylab="local field")
+title("inverse patterns -- pattern 1 fraction")
+axis(1,at=seq(0.0,1.0,0.2),labels=seq(0.0,0.5,0.1))
+axis(2,at=seq(0.0,1.0,0.2),labels=seq(0.0,0.5,0.1))

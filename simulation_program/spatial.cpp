@@ -65,6 +65,7 @@ int main(int argc, char* argv[]){
       mh_pop(pop,rng,1000);
       cleanUp(pop,0,pattern1,pattern2);
       grow(pop,rng);
+      
     }
     int p1cells = 0;
     int p2cells = 0;
@@ -75,7 +76,8 @@ int main(int argc, char* argv[]){
 	if(pM[i][j] == pattern2)p2cells++;
       }
     }
-    std::cout<<p1cells<<std::endl<<p2cells<<std::endl;
+    std::cout<<"1\t"<<pattern1<<"\t"<<p1cells<<std::endl;
+    std::cout<<"2\t"<<pattern2<<"\t"<<p2cells<<std::endl;
     //for(i = 0; i < pop->x; i++)free(pM[i]);
     //free(pM);
     //del_pop(pop);

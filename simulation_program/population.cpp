@@ -96,6 +96,7 @@ void init_interactions(Pop* p){
   for(i = 0; i < p->x; i++){
     for(j = 0; j < p->y; j++){
       if(p->space[i][j] != NULL){
+	//std::cerr<<p->space[i][j]<<std::endl;
 	for(k = 0; k < p->space[i][j]->length; k++){
 	  for(l = 0; l < p->space[i][j]->length; l++){
 	    if(abs(k-l) == 1){
@@ -244,7 +245,7 @@ void cleanUp(Pop* p, int errors, int pattern1, int pattern2){
 	  int diffs1 = difference(p->space[i][j]->modelstring,pattern1,p->space[i][j]->length, p->space[i][j]->states);
 	  int diffs2 = difference(p->space[i][j]->modelstring,pattern2,p->space[i][j]->length, p->space[i][j]->states);
 	  if(diffs1 > errors && diffs2 > errors){
-	    del(p->space[i][j]);
+	    //del(p->space[i][j]);
 	    p->space[i][j] = NULL;
 	  }
 	}

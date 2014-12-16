@@ -16,8 +16,8 @@ open(PAT,"<",$pattern_file);
 while(<PAT>){
     chomp;
     my ($p1,$p2) = split;
-    if(rand() % 2 == 0){$p1 = 1023 - $p1;}
-    if(rand() % 2 == 0){$p2 = 1023 - $p2;}
+    if(rand() >= 0.5){$p1 = 1023 - $p1;}
+    if(rand() >= 0.5){$p2 = 1023 - $p2;}
     for(my $lf = $lfs; $lf <= $lfe; $lf += $lfst){
 	for(my $ss = $sss; $ss <= $sse; $ss += $ssst){
 	    my $out = "spatial_result/$p1"."_$p2"."_$ss"."_$lf";

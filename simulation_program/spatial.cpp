@@ -38,6 +38,29 @@ int main(int argc, char* argv[]){
     return EXIT_FAILURE;
   }
   
+  int p,q;
+  int** popMaPat1 = (int**)malloc(10*sizeof(int*));
+  int** popMaPat2 = (int**)malloc(10*sizeof(int*));
+  std::ostringstream pat1Outname;
+  pat1Outname<<outfile<<".pattern1";
+  std::ostringstream pat2Outname;
+  pat2Outname<<outfile<<".pattern2";
+  std::ofstream pat1Out;
+  std::ofstream pat2Out;
+  pat1Out.open(pat1Outname.str().c_str());
+  pat2Out.open(pat2Outname.str().c_str());
+  
+  
+
+  for(p = 0; p < 10; p++){
+    popMaPat1[p] = (int*)malloc(10*sizeof(int));
+    popMaPat2[p] = (int*)malloc(10*sizeof(int));
+    for(q = 0; q < 10; q++){
+      popMaPat1[p][q] = 0;
+      popMaPat2[p][q] = 0;
+    }
+  }
+
   int replicates = atoi(argv[6]); 
   while(replicates > 0){
     replicates--;
@@ -72,16 +95,36 @@ int main(int argc, char* argv[]){
     int** pM = patternMatrix(pop);
     for(i = 0; i < pop->x; i++){
       for(j = 1; j < pop->y; j++){
-	if(pM[i][j] == pattern1)p1cells++;
-	if(pM[i][j] == pattern2)p2cells++;
+	if(pM[i][j] == pattern1){
+	  p1cells++;
+	  popMaPat1[i][j]++;
+	}
+	if(pM[i][j] == pattern2){
+	  p2cells++;
+	  popMaPat2[i][j]++;
+	}
       }
     }
-    std::cout<<"1\t"<<pattern1<<"\t"<<p1cells<<std::endl;
-    std::cout<<"2\t"<<pattern2<<"\t"<<p2cells<<std::endl;
+    //std::cout<<"1\t"<<pattern1<<"\t"<<p1cells<<std::endl;
+    //std::cout<<"2\t"<<pattern2<<"\t"<<p2cells<<std::endl;
     //for(i = 0; i < pop->x; i++)free(pM[i]);
     //free(pM);
     //del_pop(pop);
   }
-  
+
+  for(p = 0; p < 10; p++){
+    pat1Out<<popMaPat1[p][0];
+    pat2Out<<popMaPat2[p][0];
+    for(q = 1; q < 10; q++){
+      pat1Out<<"\t"<<popMaPat1[p][q];
+      pat2Out<<"\t"<<popMaPat2[p][q];
+
+    }
+    pat1Out<<std::endl;
+    pat2Out<<std::endl;
+  }
+  pat1Out.close();
+  pat2Out.close();
+
   return EXIT_SUCCESS;
 }
